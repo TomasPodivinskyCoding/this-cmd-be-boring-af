@@ -22,13 +22,7 @@ class ImageToTextConverter:
         self.pixel_chunk_height = pixel_chunk_height
         self.greyscale_characters = greyscale_characters
 
-    def img_to_text(self, img_filepath: str) -> str:
-        print(f"Zpracovávám {img_filepath}")
-        frame = cv2.imread(img_filepath)
-        if frame is None:  # TODO tohle se děje nějak často
-            print(f"Nepovedlo se načíst frame {img_filepath}")
-            return ""
-
+    def img_to_text(self, frame) -> str:
         rows, cols, _ = frame.shape
 
         ascii_output = ""

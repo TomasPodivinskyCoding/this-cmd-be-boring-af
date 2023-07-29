@@ -1,4 +1,3 @@
-./subway_surfers_videos/downloads
-./subway_surfers_videos/frames
+./subway_surfers_videos/*
 __pycache__
 .idea
