@@ -80,24 +80,15 @@ def play_text_video() -> None:
                 with open(path + "/" + text_frame, "r") as r:
                     text_frames.append(r.read())
 
-    clear_function = get_os_clear_function()
-
     fps = 24
     delay = 1 / fps
     for text_frame in text_frames:
-        os.system(clear_function)
-        print(text_frame)
+        print(text_frame, end="")
         time.sleep(delay)
 
 
 def file_sort(f: str) -> int:
     return int(f[len(processed_filename):f.rfind(".")])
-
-
-def get_os_clear_function() -> str:
-    if os.name == 'nt':
-        return 'cls'
-    return 'clear'
 
 
 if __name__ == '__main__':
