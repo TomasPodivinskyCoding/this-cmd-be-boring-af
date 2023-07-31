@@ -37,7 +37,7 @@ class ImageToTextConverter:
             ascii_output += "\n"
         return ascii_output
 
-    def __process_chunk(self, chunk):
+    def __process_chunk(self, chunk) -> str:
         chunk_brightness = 0
         for row in range(self.pixel_chunk_height):
             for col in range(self.pixel_chunk_width):
