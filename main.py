@@ -58,7 +58,6 @@ def process_video(input_path: str, filename: str) -> None:
     os.makedirs(save_directory)
 
     while success and i < max_frames_processed:
-        video_capture.set(cv2.CAP_PROP_POS_MSEC, ((i + 1) * 1000))  # TODO the fuck this line does?
         success, image = video_capture.read()
 
         saved_file_path = save_directory + f"/{processed_filename}{i + 1}.txt"

@@ -6,7 +6,7 @@ default_pixel_chunk_height = 16
 
 
 class GreyscaleVariants(Enum):
-    GREYSCALE_CHARACTERS_VERBOSE: str = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. "
+    GREYSCALE_CHARACTERS_VERBOSE: str = "█$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. "
     GREYSCALE_CHARACTERS_MINIMAL: str = "@#$%?*+;:,."
     GREYSCALE_CHARACTERS_MINIMAL_REVERSED: str = ".,:;+*?%$#@"
 
@@ -21,9 +21,11 @@ class ImageToTextConverter:
         self.pixel_chunk_width = pixel_chunk_width
         self.pixel_chunk_height = pixel_chunk_height
         self.greyscale_characters = greyscale_characters
+        self.frame = None
 
     def img_to_text(self, frame) -> str:
-        rows, cols, _ = frame.shape
+        self.frame = frame
+        rows, cols, _ = self.frame.shape
 
         ascii_output = ""
         row_chunks = int(rows / self.pixel_chunk_height)
@@ -31,17 +33,18 @@ class ImageToTextConverter:
 
         for i in range(row_chunks):
             for j in range(col_chunks):
-                chunk = frame[i * self.pixel_chunk_height:(i + 1) * self.pixel_chunk_height,
-                        j * self.pixel_chunk_width:(j + 1) * self.pixel_chunk_width]
-                ascii_output += self.__process_chunk(chunk)
+                row_start = i * self.pixel_chunk_height
+                col_start = j * self.pixel_chunk_width
+                ascii_output += self.__process_chunk(row_start, col_start)
             ascii_output += "\n"
         return ascii_output
 
-    def __process_chunk(self, chunk) -> str:
+    # TODO zkontronluj, jestli se neskipujou nějaké indexy
+    def __process_chunk(self, row_start: int, col_start: int) -> str:
         chunk_brightness = 0
-        for row in range(self.pixel_chunk_height):
-            for col in range(self.pixel_chunk_width):
-                pixel = chunk[row, col]
+        for row in range(row_start, row_start + self.pixel_chunk_height):
+            for col in range(col_start, col_start + self.pixel_chunk_width):
+                pixel = self.frame[row, col]
                 chunk_brightness += sum(pixel) / len(pixel)
 
         chunk_brightness /= self.pixel_chunk_width * self.pixel_chunk_height
