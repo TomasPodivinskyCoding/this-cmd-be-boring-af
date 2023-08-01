@@ -3,9 +3,11 @@ import re
 import time
 from pathlib import Path
 
+import colorama as colorama
 import cv2
 
 from img_to_text_converter import ImageToTextConverter
+from text_video_player import TextVideoPlayer
 from youtube_downloader import download_videos
 
 videos_folder = "./subway_surfers_videos/"
@@ -18,8 +20,6 @@ subway_surfers_gameplay_videos = [
     "https://www.youtube.com/watch?v=uCNR0tKdAVw&ab_channel=SubwaySurfers"
     # "https://www.youtube.com/watch?v=_Z5hxyn3COw&ab_channel=mozzik07"
 ]
-
-converter = ImageToTextConverter()
 
 
 def main() -> None:
@@ -58,6 +58,7 @@ def process_video(input_path: str, filename: str) -> None:
 
     os.makedirs(save_directory)
 
+    converter = ImageToTextConverter()
     while success and i < max_frames_processed:
         success, image = video_capture.read()
         grayscale_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -82,11 +83,7 @@ def play_text_video() -> None:
                 with open(path + "/" + text_frame, "r") as r:
                     text_frames.append(r.read())
 
-    fps = 60
-    delay = 1 / fps
-    for text_frame in text_frames:
-        print(text_frame, end="")
-        time.sleep(delay)
+    TextVideoPlayer(text_frames).play()
 
 
 def file_sort(f: str) -> int:

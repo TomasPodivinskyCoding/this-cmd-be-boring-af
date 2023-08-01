@@ -15,7 +15,6 @@ class GreyscaleVariants(Enum):
 
 
 class ImageToTextConverter:
-    frame: numpy.ndarray | None
     grayscale_length: int
     brightness_factor: float
 
@@ -29,27 +28,21 @@ class ImageToTextConverter:
         self.pixel_chunk_height = pixel_chunk_height
         self.greyscale_characters = greyscale_characters
         self.brightness_factor = (len(self.greyscale_characters) - 1) / 255
-        self.frame = None
 
     def img_to_text(self, frame: numpy.ndarray) -> str:
-        self.frame = frame
-        rows, cols = self.frame.shape
-
-        row_chunks = rows // self.pixel_chunk_height
-        col_chunks = cols // self.pixel_chunk_width
+        rows, cols = frame.shape
 
         ascii_output = [
             ''.join(
-                self.__process_chunk(i * self.pixel_chunk_height, j * self.pixel_chunk_width)
-                for j in range(col_chunks)
+                self.__process_chunk(frame, row_start, col_start)
+                for col_start in range(0, cols, self.pixel_chunk_width)
             )
-            for i in range(row_chunks)
+            for row_start in range(0, rows, self.pixel_chunk_height)
         ]
-
         return '\n'.join(ascii_output)
 
-    def __process_chunk(self, row_start: int, col_start: int) -> str:
-        frame_slice = self.frame[
+    def __process_chunk(self, frame: numpy.ndarray, row_start: int, col_start: int) -> str:
+        frame_slice = frame[
                       row_start:row_start + self.pixel_chunk_height,
                       col_start:col_start + self.pixel_chunk_width
                       ]
