@@ -1,3 +1,4 @@
+import time
 from enum import Enum
 
 import numpy
@@ -16,6 +17,7 @@ class GreyscaleVariants(Enum):
 class ImageToTextConverter:
     frame: numpy.ndarray | None
     grayscale_length: int
+    brightness_factor: float
 
     def __init__(
             self,
@@ -26,26 +28,26 @@ class ImageToTextConverter:
         self.pixel_chunk_width = pixel_chunk_width
         self.pixel_chunk_height = pixel_chunk_height
         self.greyscale_characters = greyscale_characters
-        self.grayscale_length = len(self.greyscale_characters)
+        self.brightness_factor = (len(self.greyscale_characters) - 1) / 255
         self.frame = None
 
     def img_to_text(self, frame: numpy.ndarray) -> str:
         self.frame = frame
         rows, cols = self.frame.shape
 
-        ascii_output = ""
-        row_chunks = int(rows / self.pixel_chunk_height)
-        col_chunks = int(cols / self.pixel_chunk_width)
+        row_chunks = rows // self.pixel_chunk_height
+        col_chunks = cols // self.pixel_chunk_width
 
-        for i in range(row_chunks):
-            for j in range(col_chunks):
-                row_start = i * self.pixel_chunk_height
-                col_start = j * self.pixel_chunk_width
-                ascii_output += self.__process_chunk(row_start, col_start)
-            ascii_output += "\n"
-        return ascii_output
+        ascii_output = [
+            ''.join(
+                self.__process_chunk(i * self.pixel_chunk_height, j * self.pixel_chunk_width)
+                for j in range(col_chunks)
+            )
+            for i in range(row_chunks)
+        ]
 
-    # TODO zkontronluj, jestli se neskipujou nějaké indexy
+        return '\n'.join(ascii_output)
+
     def __process_chunk(self, row_start: int, col_start: int) -> str:
         frame_slice = self.frame[
                       row_start:row_start + self.pixel_chunk_height,
@@ -53,6 +55,6 @@ class ImageToTextConverter:
                       ]
 
         chunk_brightness = np.mean(frame_slice)
-        ascii_representation_index = int((chunk_brightness * (self.grayscale_length - 1)) / 255)
+        ascii_representation_index = int(chunk_brightness * self.brightness_factor)
 
         return self.greyscale_characters[ascii_representation_index]
