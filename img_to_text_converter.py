@@ -1,5 +1,5 @@
 from enum import Enum
-import cv2
+
 import numpy
 import numpy as np
 
@@ -15,21 +15,23 @@ class GreyscaleVariants(Enum):
 
 class ImageToTextConverter:
     frame: numpy.ndarray | None
+    grayscale_length: int
 
     def __init__(
             self,
             pixel_chunk_width: int = default_pixel_chunk_width,
             pixel_chunk_height: int = default_pixel_chunk_height,
-            greyscale_characters: str = GreyscaleVariants.GREYSCALE_CHARACTERS_VERBOSE.value
+            greyscale_characters: str = GreyscaleVariants.GREYSCALE_CHARACTERS_MINIMAL_REVERSED.value
     ):
         self.pixel_chunk_width = pixel_chunk_width
         self.pixel_chunk_height = pixel_chunk_height
         self.greyscale_characters = greyscale_characters
+        self.grayscale_length = len(self.greyscale_characters)
         self.frame = None
 
     def img_to_text(self, frame: numpy.ndarray) -> str:
         self.frame = frame
-        rows, cols, _ = self.frame.shape
+        rows, cols = self.frame.shape
 
         ascii_output = ""
         row_chunks = int(rows / self.pixel_chunk_height)
@@ -51,7 +53,6 @@ class ImageToTextConverter:
                       ]
 
         chunk_brightness = np.mean(frame_slice)
-        len_greyscale = len(self.greyscale_characters)
-        ascii_representation_index = min(int(chunk_brightness / len_greyscale), len_greyscale - 1)
+        ascii_representation_index = int((chunk_brightness * (self.grayscale_length - 1)) / 255)
 
         return self.greyscale_characters[ascii_representation_index]

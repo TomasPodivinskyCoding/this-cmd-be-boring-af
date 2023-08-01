@@ -15,7 +15,8 @@ videos_folder_processed = videos_folder + "processed"
 processed_filename = "frame"
 
 subway_surfers_gameplay_videos = [
-    "https://www.youtube.com/watch?v=_Z5hxyn3COw&ab_channel=mozzik07"
+    "https://www.youtube.com/watch?v=uCNR0tKdAVw&ab_channel=SubwaySurfers"
+    # "https://www.youtube.com/watch?v=_Z5hxyn3COw&ab_channel=mozzik07"
 ]
 
 converter = ImageToTextConverter()
@@ -59,10 +60,11 @@ def process_video(input_path: str, filename: str) -> None:
 
     while success and i < max_frames_processed:
         success, image = video_capture.read()
+        grayscale_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
         saved_file_path = save_directory + f"/{processed_filename}{i + 1}.txt"
         with open(saved_file_path, "w") as file_output:
-            file_output.write(converter.img_to_text(image))
+            file_output.write(converter.img_to_text(grayscale_image))
             print(f"Zpracováno {saved_file_path}")
         file_output.close()
 
@@ -80,7 +82,7 @@ def play_text_video() -> None:
                 with open(path + "/" + text_frame, "r") as r:
                     text_frames.append(r.read())
 
-    fps = 24
+    fps = 60
     delay = 1 / fps
     for text_frame in text_frames:
         print(text_frame, end="")
