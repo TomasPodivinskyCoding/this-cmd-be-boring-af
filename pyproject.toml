@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "this-cmd-be-boring-af"
+version = "0.1.0"
+description = "A little tool to show subway surfers, family guy funny moments and other entertaining clips in console"
+authors = ["tomas.podivinsky <tomas.podivinsky@olc.cz>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "1.25.1"
+opencv-python = "^4.8.0.74"
+pytube = "^15.0.0"
+colorama = "^0.4.6"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
