@@ -11,7 +11,12 @@ import numpy
 from img_to_text_converter import ImageToTextConverter
 from progress_bar import DivideProgressBar
 from text_video_player import TextVideoPlayer
-from youtube_downloader import download_videos
+from youtube_downloader import YoutubeDownloader
+
+videos = [
+    "https://www.youtube.com/watch?v=z5dekcBMYQs&ab_channel=LenoksRecordings",
+    "https://www.youtube.com/watch?v=uCNR0tKdAVw&ab_channel=SubwaySurfers",
+]
 
 videos_folder = "./videos/"
 videos_folder_downloads = videos_folder + "downloads"
@@ -19,22 +24,22 @@ videos_folder_processed = videos_folder + "processed"
 
 processed_filename = "frame"
 
-subway_surfers_gameplay_videos = [
-    "https://www.youtube.com/watch?v=uCNR0tKdAVw&ab_channel=SubwaySurfers"
-    # "https://www.youtube.com/watch?v=_Z5hxyn3COw&ab_channel=mozzik07"
-]
-
 
 def main() -> None:
+    clear()
     if not os.path.exists(videos_folder_downloads):
+        print("Stahuji videa...")
         os.makedirs(videos_folder_downloads)
-        download_videos(subway_surfers_gameplay_videos, videos_folder_downloads)
+        YoutubeDownloader().download_videos(videos, videos_folder_downloads)
 
     if not os.path.exists(videos_folder_processed):
         os.makedirs(videos_folder_processed)
 
     process_videos()
     play_text_video()
+
+def clear() -> None:
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 
 def process_videos() -> None:
@@ -73,6 +78,7 @@ def process_video(input_path: str, filename: str) -> None:
             progress_bar.progress(i)
         file_output.close()
         i += 1
+    print("")
 
 
 def play_text_video() -> None:
@@ -85,8 +91,9 @@ def play_text_video() -> None:
             for text_frame in dir_files:
                 with open(path + "/" + text_frame, "r") as r:
                     text_frames.append(r.read())
+            TextVideoPlayer(text_frames).play()
+            text_frames.clear()
 
-    TextVideoPlayer(text_frames).play()
 
 
 def file_sort(f: str) -> int:

@@ -27,7 +27,7 @@ class ImageToTextConverter:
         self.greyscale_characters = greyscale_characters
         self.rgb_weights = np.array([0.1140, 0.5870, 0.2989])
 
-    def __calculate_new_height(self, dimensions: tuple[int, int]):
+    def __calculate_new_height(self, dimensions: tuple[int, int]) -> int:
         ascii_character_aspect_ratio = 0.55
         aspect_ratio = dimensions[1] / float(dimensions[0])
         return int(self.new_width / aspect_ratio * ascii_character_aspect_ratio)
@@ -35,9 +35,10 @@ class ImageToTextConverter:
     def img_to_text(self, img: np.ndarray) -> str:
         if img is None:
             return ""
-        img_gray = self.image_to_perceived_brightness(img)
-        img_resized = cv2.resize(img_gray, (self.new_width, self.new_height))
-        img_normalized = (img_resized / 255.0) * (len(self.greyscale_characters) - 1)
+
+        img_resized = cv2.resize(img, (self.new_width, self.new_height))
+        img_gray = self.image_to_perceived_brightness(img_resized)
+        img_normalized = (img_gray / 255.0) * (len(self.greyscale_characters) - 1)
 
         ascii_img = np.asarray([self.greyscale_characters[int(pix)] for pix in np.nditer(img_normalized)])
         ascii_img = ascii_img.reshape((self.new_height, self.new_width))
