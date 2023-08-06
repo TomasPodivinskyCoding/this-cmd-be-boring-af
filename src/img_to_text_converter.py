@@ -7,9 +7,10 @@ import numpy as np
 
 
 class GreyscaleVariants(Enum):
-    GREYSCALE_CHARACTERS_VERBOSE: str = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. "
-    GREYSCALE_CHARACTERS_MINIMAL: str = "@#$%?*+;:,."
-    GREYSCALE_CHARACTERS_MINIMAL_REVERSED: str = ".,:;+*?%$#@"
+    DEPTH_70: str = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. "
+    DEPTH_70_REVERSED: str = " .'`^\",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
+    DEPTH_10: str = "@#$%?*+;:,."
+    DEPTH_10_REVERSED: str = ".,:;+*?%$#@"
 
 
 class ImageToTextConverter:
@@ -20,11 +21,11 @@ class ImageToTextConverter:
             self,
             dimensions: tuple[int, int],
             new_width: int = 100,
-            greyscale_characters: str = GreyscaleVariants.GREYSCALE_CHARACTERS_MINIMAL_REVERSED.value
+            greyscale_characters: GreyscaleVariants = GreyscaleVariants.DEPTH_10_REVERSED
     ):
         self.new_width = new_width
         self.new_height = self.__calculate_new_height(dimensions)
-        self.greyscale_characters = greyscale_characters
+        self.greyscale_characters = greyscale_characters.value
         self.rgb_weights = np.array([0.1140, 0.5870, 0.2989])
 
     def __calculate_new_height(self, dimensions: tuple[int, int]) -> int:

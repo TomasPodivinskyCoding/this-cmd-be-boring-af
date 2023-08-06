@@ -6,7 +6,7 @@ from pathlib import Path
 
 import cv2
 
-from img_to_text_converter import ImageToTextConverter
+from img_to_text_converter import ImageToTextConverter, GreyscaleVariants
 from progress_bar import DivideProgressBar
 from text_video_player import TextVideoPlayer
 from youtube_downloader import YoutubeDownloader
@@ -112,10 +112,11 @@ def play_text_video(video_type: TypeArg, repeat: bool) -> None:
         with open(path + "/" + text_frame, "r") as r:
             text_frames.append(r.read())
     text_video_player = TextVideoPlayer(text_frames)
-    if repeat:
-        while True:
-            text_video_player.play()
-    else:
+    if not repeat:
+        text_video_player.play()
+        return
+
+    while True:
         text_video_player.play()
 
 

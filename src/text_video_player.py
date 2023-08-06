@@ -13,7 +13,7 @@ class TextVideoPlayer:
 
         colorama.init()
 
-    def play(self) -> None:
+    def play(self):
         new_lines_number = self.text_frames[0].count("\n")
         go_up_a_row_char = '\033[A'
         go_to_start_of_previous_output = go_up_a_row_char * new_lines_number
@@ -21,5 +21,5 @@ class TextVideoPlayer:
         for text_frame in self.text_frames:
             print(text_frame, end="\r")
             time.sleep(self.delay)
-            print(go_to_start_of_previous_output, end="\r")
+            print(go_to_start_of_previous_output, end="\r")  # TODO it would be good to be in one
         print("\n" * new_lines_number)
