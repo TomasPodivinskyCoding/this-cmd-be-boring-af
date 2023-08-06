@@ -9,11 +9,11 @@ import cv2
 import numpy
 
 from img_to_text_converter import ImageToTextConverter
-from progress_bar import ProgressBar
+from progress_bar import DivideProgressBar
 from text_video_player import TextVideoPlayer
 from youtube_downloader import download_videos
 
-videos_folder = "./subway_surfers_videos/"
+videos_folder = "./videos/"
 videos_folder_downloads = videos_folder + "downloads"
 videos_folder_processed = videos_folder + "processed"
 
@@ -63,16 +63,14 @@ def process_video(input_path: str, filename: str) -> None:
     converter = ImageToTextConverter(dimensions)
 
     frame_count = video_capture.get(cv2.CAP_PROP_FRAME_COUNT)
-    progress_bar = ProgressBar(f"Zpracovávám {filename}", int(frame_count))
+    progress_bar = DivideProgressBar(f"Zpracovávám {filename}", int(frame_count))
     while success:
         success, image = video_capture.read()
 
         saved_file_path = save_directory + f"/{processed_filename}{i + 1}.txt"
         with open(saved_file_path, "w") as file_output:
             file_output.write(converter.img_to_text(image))
-            # TODO get number of frames and display a % progress
             progress_bar.progress(i)
-            # print(f"Zpracováno {saved_file_path}")
         file_output.close()
         i += 1
 
