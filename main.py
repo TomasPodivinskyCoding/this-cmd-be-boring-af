@@ -1,7 +1,10 @@
+import argparse
 import os
 import re
 import sys
 import time
+from argparse import Namespace
+from enum import Enum
 from pathlib import Path
 
 import colorama as colorama
@@ -25,7 +28,12 @@ videos_folder_processed = videos_folder + "processed"
 processed_filename = "frame"
 
 
+# description = "A little tool to show subway surfers, family guy funny moments and other entertaining clips in console"
+description = "Malý nástroj na přehrávání vtipných momentů z Griffinových, Subway Surfers a jiných zábavných videí v konzoli"
+
 def main() -> None:
+    args = initialize_parser()
+
     clear()
     if not os.path.exists(videos_folder_downloads):
         print("Stahuji videa...")
@@ -34,12 +42,28 @@ def main() -> None:
 
     if not os.path.exists(videos_folder_processed):
         os.makedirs(videos_folder_processed)
+        process_videos()
+    play_text_video(args.type, args.repeat)
 
-    process_videos()
-    play_text_video()
+
+def initialize_parser() -> Namespace:
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument("-t", "--type", help="Druh videa pro přehrání", type=TypeArg, choices=list(TypeArg), default="subway")
+    parser.add_argument("-r", "--repeat", help="Přehrávat ve smyčce", action=argparse.BooleanOptionalAction, default=False)
+    args = parser.parse_args()
+    return args
+
 
 def clear() -> None:
     os.system('cls' if os.name == 'nt' else 'clear')
+
+
+class TypeArg(Enum):
+    subway = "subway"
+    family = "family"
+
+    def __str__(self):
+        return self.value
 
 
 def process_videos() -> None:
@@ -81,19 +105,32 @@ def process_video(input_path: str, filename: str) -> None:
     print("")
 
 
-def play_text_video() -> None:
-    text_frames: list[str] = []
-    for processed_video_folder in os.listdir(videos_folder_processed):
-        path = os.path.join(videos_folder_processed, processed_video_folder)
-        if os.path.isdir(path):
-            dir_files = os.listdir(path)
-            dir_files.sort(key=file_sort)
-            for text_frame in dir_files:
-                with open(path + "/" + text_frame, "r") as r:
-                    text_frames.append(r.read())
-            TextVideoPlayer(text_frames).play()
-            text_frames.clear()
+def play_text_video(video_type: TypeArg, repeat: bool) -> None:
+    processed_videos = os.listdir(videos_folder_processed)
+    video_to_play = processed_videos[processed_videos.index(get_video_filename(video_type))]
 
+    text_frames: list[str] = []
+    path = os.path.join(videos_folder_processed, video_to_play)
+    dir_files = os.listdir(path)
+    dir_files.sort(key=file_sort)
+    for text_frame in dir_files:
+        with open(path + "/" + text_frame, "r") as r:
+            text_frames.append(r.read())
+    text_video_player = TextVideoPlayer(text_frames)
+    if repeat:
+        while True:
+            text_video_player.play()
+    else:
+        text_video_player.play()
+
+
+def get_video_filename(video_type: TypeArg):
+    if video_type == TypeArg.subway:
+        return "video2"
+    elif video_type == TypeArg.family:
+        return "video1"
+    else:
+        raise ValueError("Zadán špatný druh videa")
 
 
 def file_sort(f: str) -> int:
