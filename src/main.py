@@ -1,15 +1,10 @@
 import argparse
 import os
-import re
-import sys
-import time
 from argparse import Namespace
 from enum import Enum
 from pathlib import Path
 
-import colorama as colorama
 import cv2
-import numpy
 
 from img_to_text_converter import ImageToTextConverter
 from progress_bar import DivideProgressBar
@@ -21,7 +16,7 @@ videos = [
     "https://www.youtube.com/watch?v=uCNR0tKdAVw&ab_channel=SubwaySurfers",
 ]
 
-videos_folder = "./videos/"
+videos_folder = "../videos/"
 videos_folder_downloads = videos_folder + "downloads"
 videos_folder_processed = videos_folder + "processed"
 
