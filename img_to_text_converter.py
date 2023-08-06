@@ -1,11 +1,9 @@
 import time
 from enum import Enum
 
+import cv2
 import numpy
 import numpy as np
-
-default_pixel_chunk_width = 9
-default_pixel_chunk_height = 16
 
 
 class GreyscaleVariants(Enum):
@@ -16,38 +14,32 @@ class GreyscaleVariants(Enum):
 
 class ImageToTextConverter:
     grayscale_length: int
-    brightness_factor: float
+    new_width: int
 
     def __init__(
             self,
-            pixel_chunk_width: int = default_pixel_chunk_width,
-            pixel_chunk_height: int = default_pixel_chunk_height,
+            dimensions: tuple[int, int],
+            new_width: int = 100,
             greyscale_characters: str = GreyscaleVariants.GREYSCALE_CHARACTERS_MINIMAL_REVERSED.value
     ):
-        self.pixel_chunk_width = pixel_chunk_width
-        self.pixel_chunk_height = pixel_chunk_height
+        self.new_width = new_width
+        self.new_height = self.__calculate_new_height(dimensions)
         self.greyscale_characters = greyscale_characters
-        self.brightness_factor = (len(self.greyscale_characters) - 1) / 255
+        self.rgb_weights = np.array([0.1140, 0.5870, 0.2989])
 
-    def img_to_text(self, frame: numpy.ndarray) -> str:
-        rows, cols = frame.shape
+    def __calculate_new_height(self, dimensions: tuple[int, int]):
+        ascii_character_aspect_ratio = 0.55
+        aspect_ratio = dimensions[1] / float(dimensions[0])
+        return int(self.new_width / aspect_ratio * ascii_character_aspect_ratio)
 
-        ascii_output = [
-            ''.join(
-                self.__process_chunk(frame, row_start, col_start)
-                for col_start in range(0, cols, self.pixel_chunk_width)
-            )
-            for row_start in range(0, rows, self.pixel_chunk_height)
-        ]
-        return '\n'.join(ascii_output)
+    def img_to_text(self, img: np.ndarray) -> str:
+        img_gray = self.image_to_perceived_brightness(img)
+        img_resized = cv2.resize(img_gray, (self.new_width, self.new_height))
+        img_normalized = (img_resized / 255.0) * (len(self.greyscale_characters) - 1)
 
-    def __process_chunk(self, frame: numpy.ndarray, row_start: int, col_start: int) -> str:
-        frame_slice = frame[
-                      row_start:row_start + self.pixel_chunk_height,
-                      col_start:col_start + self.pixel_chunk_width
-                      ]
+        ascii_img = np.asarray([self.greyscale_characters[int(pix)] for pix in np.nditer(img_normalized)])
+        ascii_img = ascii_img.reshape((self.new_height, self.new_width))
+        return "\n".join(["".join(row) for row in ascii_img])
 
-        chunk_brightness = np.mean(frame_slice)
-        ascii_representation_index = int(chunk_brightness * self.brightness_factor)
-
-        return self.greyscale_characters[ascii_representation_index]
+    def image_to_perceived_brightness(self,img: np.ndarray) -> np.ndarray:
+        return np.dot(img[..., :3], self.rgb_weights)

@@ -1,10 +1,12 @@
 import os
 import re
+import sys
 import time
 from pathlib import Path
 
 import colorama as colorama
 import cv2
+import numpy
 
 from img_to_text_converter import ImageToTextConverter
 from text_video_player import TextVideoPlayer
@@ -47,25 +49,25 @@ def remove_extension(filename: str) -> str:
 
 
 def process_video(input_path: str, filename: str) -> None:
-    # https://stackoverflow.com/questions/33311153/python-extracting-and-saving-video-frames
     video_capture = cv2.VideoCapture(input_path)
+    # video_capture.get(cv2.CAP_PROP_FPS)  # TODO save this alongside the video or smth
     success = True
     i = 0
-    max_frames_processed = 1000
+    max_frames_processed = 100
     save_directory = videos_folder_processed + "/" + filename
     if os.path.exists(save_directory):
         return
 
     os.makedirs(save_directory)
 
-    converter = ImageToTextConverter()
+    dimensions = (int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)))
+    converter = ImageToTextConverter(dimensions)
     while success and i < max_frames_processed:
         success, image = video_capture.read()
-        grayscale_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
         saved_file_path = save_directory + f"/{processed_filename}{i + 1}.txt"
         with open(saved_file_path, "w") as file_output:
-            file_output.write(converter.img_to_text(grayscale_image))
+            file_output.write(converter.img_to_text(image))
             print(f"Zpracováno {saved_file_path}")
         file_output.close()
 
