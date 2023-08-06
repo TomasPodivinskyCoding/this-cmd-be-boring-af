@@ -9,6 +9,7 @@ import cv2
 import numpy
 
 from img_to_text_converter import ImageToTextConverter
+from progress_bar import ProgressBar
 from text_video_player import TextVideoPlayer
 from youtube_downloader import download_videos
 
@@ -49,28 +50,30 @@ def remove_extension(filename: str) -> str:
 
 
 def process_video(input_path: str, filename: str) -> None:
+    save_directory = videos_folder_processed + "/" + filename
+    if os.path.exists(save_directory):
+        return
+    os.makedirs(save_directory)
+
     video_capture = cv2.VideoCapture(input_path)
     # video_capture.get(cv2.CAP_PROP_FPS)  # TODO save this alongside the video or smth
     success = True
     i = 0
-    max_frames_processed = 100
-    save_directory = videos_folder_processed + "/" + filename
-    if os.path.exists(save_directory):
-        return
-
-    os.makedirs(save_directory)
-
     dimensions = (int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)))
     converter = ImageToTextConverter(dimensions)
-    while success and i < max_frames_processed:
+
+    frame_count = video_capture.get(cv2.CAP_PROP_FRAME_COUNT)
+    progress_bar = ProgressBar(f"Zpracovávám {filename}", int(frame_count))
+    while success:
         success, image = video_capture.read()
 
         saved_file_path = save_directory + f"/{processed_filename}{i + 1}.txt"
         with open(saved_file_path, "w") as file_output:
             file_output.write(converter.img_to_text(image))
-            print(f"Zpracováno {saved_file_path}")
+            # TODO get number of frames and display a % progress
+            progress_bar.progress(i)
+            # print(f"Zpracováno {saved_file_path}")
         file_output.close()
-
         i += 1
 
 

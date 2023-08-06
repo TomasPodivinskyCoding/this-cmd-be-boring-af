@@ -33,6 +33,8 @@ class ImageToTextConverter:
         return int(self.new_width / aspect_ratio * ascii_character_aspect_ratio)
 
     def img_to_text(self, img: np.ndarray) -> str:
+        if img is None:
+            return ""
         img_gray = self.image_to_perceived_brightness(img)
         img_resized = cv2.resize(img_gray, (self.new_width, self.new_height))
         img_normalized = (img_resized / 255.0) * (len(self.greyscale_characters) - 1)
@@ -41,5 +43,5 @@ class ImageToTextConverter:
         ascii_img = ascii_img.reshape((self.new_height, self.new_width))
         return "\n".join(["".join(row) for row in ascii_img])
 
-    def image_to_perceived_brightness(self,img: np.ndarray) -> np.ndarray:
+    def image_to_perceived_brightness(self, img: np.ndarray) -> np.ndarray:
         return np.dot(img[..., :3], self.rgb_weights)
