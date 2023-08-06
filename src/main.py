@@ -1,4 +1,5 @@
 import argparse
+import dataclasses
 import os
 from argparse import Namespace
 from enum import Enum
@@ -9,22 +10,22 @@ import cv2
 from img_to_text_converter import ImageToTextConverter, GreyscaleVariants
 from progress_bar import DivideProgressBar
 from text_video_player import TextVideoPlayer
-from youtube_downloader import YoutubeDownloader
+from youtube_downloader import YoutubeDownloader, Video
 
+subway_video: Video = Video("subway", "https://www.youtube.com/watch?v=uCNR0tKdAVw&ab_channel=SubwaySurfers")
+family_guy_video: Video = Video("family", "https://www.youtube.com/watch?v=z5dekcBMYQs&ab_channel=LenoksRecordings")
 videos = [
-    "https://www.youtube.com/watch?v=z5dekcBMYQs&ab_channel=LenoksRecordings",
-    "https://www.youtube.com/watch?v=uCNR0tKdAVw&ab_channel=SubwaySurfers",
+    subway_video,
+    family_guy_video,
 ]
 
 videos_folder = "../videos/"
 videos_folder_downloads = videos_folder + "downloads"
 videos_folder_processed = videos_folder + "processed"
 
-processed_filename = "frame"
-
-
 # description = "A little tool to show subway surfers, family guy funny moments and other entertaining clips in console"
 description = "Malý nástroj na přehrávání vtipných momentů z Griffinových, Subway Surfers a jiných zábavných videí v konzoli"
+
 
 def main() -> None:
     args = initialize_parser()
@@ -43,8 +44,10 @@ def main() -> None:
 
 def initialize_parser() -> Namespace:
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument("-t", "--type", help="Druh videa pro přehrání", type=TypeArg, choices=list(TypeArg), default="subway")
-    parser.add_argument("-r", "--repeat", help="Přehrávat ve smyčce", action=argparse.BooleanOptionalAction, default=False)
+    parser.add_argument("-t", "--type", help="Druh videa pro přehrání", type=TypeArg, choices=list(TypeArg),
+                        default=TypeArg.subway)
+    parser.add_argument("-r", "--repeat", help="Přehrávat ve smyčce", action=argparse.BooleanOptionalAction,
+                        default=False)
     args = parser.parse_args()
     return args
 
@@ -91,7 +94,7 @@ def process_video(input_path: str, filename: str) -> None:
     while success:
         success, image = video_capture.read()
 
-        saved_file_path = save_directory + f"/{processed_filename}{i + 1}.txt"
+        saved_file_path = save_directory + f"/{i + 1}.txt"
         with open(saved_file_path, "w") as file_output:
             file_output.write(converter.img_to_text(image))
             progress_bar.progress(i)
@@ -122,15 +125,15 @@ def play_text_video(video_type: TypeArg, repeat: bool) -> None:
 
 def get_video_filename(video_type: TypeArg):
     if video_type == TypeArg.subway:
-        return "video2"
+        return subway_video.name
     elif video_type == TypeArg.family:
-        return "video1"
+        return family_guy_video.name
     else:
-        raise ValueError("Zadán špatný druh videa")
+        return subway_video.name
 
 
-def file_sort(f: str) -> int:
-    return int(f[len(processed_filename):f.rfind(".")])
+def file_sort(filename: str) -> int:
+    return int(filename[:filename.rfind(".")])
 
 
 if __name__ == '__main__':
