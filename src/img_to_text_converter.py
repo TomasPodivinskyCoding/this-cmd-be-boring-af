@@ -1,16 +1,14 @@
-import time
 from enum import Enum
 
 import cv2
-import numpy
 import numpy as np
 
 
 class GreyscaleVariants(Enum):
     DEPTH_70: str = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\\|()1{}[]?-_+~<>i!lI;:,\"^`'. "
-    DEPTH_70_REVERSED: str = " .'`^\",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
+    DEPTH_70_REVERSED: str = DEPTH_70[::-1]
     DEPTH_10: str = "@#$%?*+;:,."
-    DEPTH_10_REVERSED: str = ".,:;+*?%$#@"
+    DEPTH_10_REVERSED: str = DEPTH_10[::-1]
 
 
 class ImageToTextConverter:

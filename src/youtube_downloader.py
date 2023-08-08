@@ -1,6 +1,8 @@
 import dataclasses
 
+import pytube.exceptions
 from pytube import YouTube
+from pytube.exceptions import VideoUnavailable
 
 from progress_bar import BlockProgressBar
 
@@ -19,14 +21,19 @@ class YoutubeDownloader:
             self.download_youtube_video(video.url, output_folder, f"{video.name}.mp4")
 
     def download_youtube_video(self, url: str, output_folder: str, filename: str) -> None:
-        youtube = YouTube(url, on_progress_callback=self.on_progress)
+        try:
+            youtube = YouTube(url, on_progress_callback=self.on_progress)
+        except VideoUnavailable:
+            print(f"\nVideo {url} není dostupné")
+            return
+
         youtube = youtube.streams.get_highest_resolution()
         self.progress_bar = BlockProgressBar(f"Stahuji {filename}", youtube.filesize)
         try:
             youtube.download(output_folder, filename)
             print(f"\n{filename} bylo úspěšně staženo")
-        except Exception as e:  # TODO mrdat lepší handling errorů
+        except pytube.exceptions.PytubeError:
             print(f"\nNepovdelo se stáhnout video {url}")
 
-    def on_progress(self, stream, chunk, bytes_remaining) -> None:
+    def on_progress(self, stream, _chunk, bytes_remaining) -> None:
         self.progress_bar.progress(stream.filesize - bytes_remaining)

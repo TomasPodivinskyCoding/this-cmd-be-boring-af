@@ -19,7 +19,6 @@ class TextVideoPlayer:
         go_to_start_of_previous_output = go_up_a_row_char * new_lines_number
 
         for text_frame in self.text_frames:
-            print(text_frame, end="\r")
+            print(text_frame + go_to_start_of_previous_output, end="\r")
             time.sleep(self.delay)
-            print(go_to_start_of_previous_output, end="\r")  # TODO it would be good to be in one
         print("\n" * new_lines_number)
