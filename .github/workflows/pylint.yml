@@ -23,4 +23,4 @@ jobs:
 
     - name: Analysing the code with pylint
       run: |
-        pylint $(git ls-files '*.py') --rcfile=.pylintrc
+        poetry run pylint $(git ls-files '*.py') --rcfile=.pylintrc

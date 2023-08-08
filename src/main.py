@@ -65,7 +65,10 @@ def process_video(input_path: str, filename: str) -> None:
     os.makedirs(save_directory)
 
     video_capture = cv2.VideoCapture(input_path)
-    dimensions = (int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT)), int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)))
+    dimensions = (
+        int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT)),
+        int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH))
+    )
     converter = ImageToTextConverter(dimensions)
 
     frame_count = int(video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
