@@ -39,6 +39,8 @@ class ImageToTextConverter:
         img_gray = cv2.cvtColor(img_resized, cv2.COLOR_BGR2GRAY)
         img_normalized = (img_gray / 255.0) * (len(self.greyscale_characters) - 1)
 
-        ascii_img = np.asarray([self.greyscale_characters[int(pix)] for pix in np.nditer(img_normalized)])
+        ascii_img = np.asarray(
+            [self.greyscale_characters[int(pix)] for pix in np.nditer(img_normalized)]
+        )
         ascii_img = ascii_img.reshape((self.new_height, self.new_width))
         return "\n".join(["".join(row) for row in ascii_img])

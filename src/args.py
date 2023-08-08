@@ -28,7 +28,6 @@ def initialize_parser() -> Namespace:
 
 
 class TypeArg(Enum):
-    # TODO this needs testing
     SUBWAY = "subway"
     FAMILY = "family-guy"
 
