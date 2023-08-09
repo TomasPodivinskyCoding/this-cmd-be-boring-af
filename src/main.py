@@ -9,6 +9,13 @@ from progress_bar import DivideProgressBar
 from text_video_player import TextVideoPlayer
 from youtube_downloader import YoutubeDownloader, Video
 
+# TODO
+# Print colors in the video
+# Allow users to play their own videos
+# React to ctrl+c and clear the console
+# Progress bar when processing video frame for playing
+# PUBLISH TO PYPI
+
 subway_video: Video = Video(
     "subway",
     "https://www.youtube.com/watch?v=uCNR0tKdAVw&ab_channel=SubwaySurfers"
@@ -34,7 +41,7 @@ def main() -> None:
         print("Stahuji videa...")
         os.makedirs(VIDEOS_FOLDER_DOWNLOADS)
         YoutubeDownloader().download_videos(videos, VIDEOS_FOLDER_DOWNLOADS)
-
+    # TODO zpracovávat videa až podle zvoleného typu a ne všechna!
     if not os.path.exists(VIDEOS_FOLDER_PROCESSED):
         print("Zpracovávám videa...")
         os.makedirs(VIDEOS_FOLDER_PROCESSED)
