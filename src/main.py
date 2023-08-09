@@ -1,5 +1,5 @@
 import os
-from pathlib import Path
+import signal
 
 import cv2
 
@@ -52,8 +52,12 @@ def main() -> None:
     processed_videos_folder = f"{VIDEOS_FOLDER_PROCESSED}/{video.name}/{greyscale_type_name}"
     if not os.path.exists(processed_videos_folder):
         os.makedirs(processed_videos_folder)
-        process_video(downloaded_video_path, processed_videos_folder, video.name, args.greyscale_chars)
-
+        process_video(
+            downloaded_video_path,
+            processed_videos_folder,
+            video.name,
+            args.greyscale_chars
+        )
     play_text_video(processed_videos_folder, args.repeat)
 
 
@@ -111,6 +115,13 @@ def play_text_video(input_path: str, repeat: bool) -> None:
     clear()
 
     text_video_player = TextVideoPlayer(text_frames)
+
+    def handle_ctrl_c(_sig, _frame) -> None:
+        print("\n" * text_video_player.new_lines_number)
+        exit(0)
+
+    signal.signal(signal.SIGINT, handle_ctrl_c)
+
     if not repeat:
         text_video_player.play()
         return
