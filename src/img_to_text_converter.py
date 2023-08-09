@@ -10,6 +10,9 @@ class GreyscaleVariants(Enum):
     DEPTH_10: str = "@#$%?*+;:,."
     DEPTH_10_REVERSED: str = DEPTH_10[::-1]
 
+    def __str__(self) -> str:
+        return self.name.lower()
+
 
 class ImageToTextConverter:
     grayscale_length: int
