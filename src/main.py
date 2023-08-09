@@ -1,5 +1,6 @@
 import os
 import signal
+import sys
 
 import cv2
 
@@ -12,7 +13,6 @@ from youtube_downloader import YoutubeDownloader, Video
 # To add (don't really have the time to create an issue tracker for this)
 # Print colors in the video
 # Allow users to play their own videos
-# React to ctrl+c and clear the console
 # Progress bar when processing video frame for playing
 # Get more videos
 # Fix clear with repeat flag
@@ -118,7 +118,7 @@ def play_text_video(input_path: str, repeat: bool) -> None:
 
     def handle_ctrl_c(_sig, _frame) -> None:
         print("\n" * text_video_player.new_lines_number)
-        exit(0)
+        sys.exit(0)
 
     signal.signal(signal.SIGINT, handle_ctrl_c)
 
