@@ -16,13 +16,9 @@ class Video:
 class YoutubeDownloader:
     progress_bar: BlockProgressBar | None = None
 
-    def download_videos(self, urls: list[Video], output_folder: str) -> None:
-        for video in urls:
-            self.download_youtube_video(video.url, output_folder, f"{video.name}.mp4")
-
     def download_youtube_video(self, url: str, output_folder: str, filename: str) -> None:
         try:
-            youtube = YouTube(url, on_progress_callback=self.on_progress)
+            youtube = YouTube(url, on_progress_callback=self.__on_progress)
         except VideoUnavailable:
             print(f"\nVideo {url} není dostupné")
             return
@@ -35,5 +31,5 @@ class YoutubeDownloader:
         except pytube.exceptions.PytubeError:
             print(f"\nNepovdelo se stáhnout video {url}")
 
-    def on_progress(self, stream, _chunk, bytes_remaining) -> None:
+    def __on_progress(self, stream, _chunk, bytes_remaining) -> None:
         self.progress_bar.progress(stream.filesize - bytes_remaining)

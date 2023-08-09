@@ -22,7 +22,7 @@ def initialize_parser() -> Namespace:
 
 def __initialize_type_arg(parser: argparse.ArgumentParser) -> None:
     args_list = list(TypeArg)
-    default_type = TypeArg.SUBWAY
+    default_type = TypeArg.SUBWAY_SURFERS
     help_text = f"Druh videa pro přehrání\n" \
                 f"{__format_choices(args_list)}" \
                 f"\nVýchozí hodnota: {default_type}"
@@ -68,8 +68,8 @@ def __format_choices(choices: list[any]) -> str:
 
 
 class TypeArg(Enum):
-    SUBWAY = "subway-surfers"
-    FAMILY = "family-guy"
+    SUBWAY_SURFERS = "subway-surfers"
+    FAMILY_GUY = "family-guy"
 
     def __str__(self):
         return self.value

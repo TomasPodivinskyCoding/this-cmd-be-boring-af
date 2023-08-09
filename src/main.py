@@ -9,25 +9,24 @@ from progress_bar import DivideProgressBar
 from text_video_player import TextVideoPlayer
 from youtube_downloader import YoutubeDownloader, Video
 
-# TODO
+# To add (don't really have the time to create an issue tracker for this)
 # Print colors in the video
 # Allow users to play their own videos
 # React to ctrl+c and clear the console
 # Progress bar when processing video frame for playing
+# Get more videos
+# Fix clear with repeat flag
+# README
 # PUBLISH TO PYPI
 
 subway_video: Video = Video(
-    "subway",
+    TypeArg.SUBWAY_SURFERS.value,
     "https://www.youtube.com/watch?v=uCNR0tKdAVw&ab_channel=SubwaySurfers"
 )
 family_guy_video: Video = Video(
-    "family",
+    TypeArg.FAMILY_GUY.value,
     "https://www.youtube.com/watch?v=z5dekcBMYQs&ab_channel=LenoksRecordings"
 )
-videos = [
-    subway_video,
-    family_guy_video,
-]
 
 VIDEOS_FOLDER = "../videos/"
 VIDEOS_FOLDER_DOWNLOADS = VIDEOS_FOLDER + "downloads"
@@ -36,17 +35,34 @@ VIDEOS_FOLDER_PROCESSED = VIDEOS_FOLDER + "processed"
 
 def main() -> None:
     args = initialize_parser()
+    video = get_video_by_type(args.type)
 
-    if not os.path.exists(VIDEOS_FOLDER_DOWNLOADS):
-        print("Stahuji videa...")
+    downloaded_video_filename = f"{video.name}.mp4"
+    downloaded_video_path = VIDEOS_FOLDER_DOWNLOADS + "/" + downloaded_video_filename
+    if not os.path.exists(downloaded_video_path):
+        print(f"Stahuji video {video.name}")
         os.makedirs(VIDEOS_FOLDER_DOWNLOADS)
-        YoutubeDownloader().download_videos(videos, VIDEOS_FOLDER_DOWNLOADS)
-    # TODO zpracovávat videa až podle zvoleného typu a ne všechna!
-    if not os.path.exists(VIDEOS_FOLDER_PROCESSED):
-        print("Zpracovávám videa...")
-        os.makedirs(VIDEOS_FOLDER_PROCESSED)
-        process_videos()
+        YoutubeDownloader().download_youtube_video(
+            video.url,
+            VIDEOS_FOLDER_DOWNLOADS,
+            f"{video.name}.mp4"
+        )
+
+    processed_videos_folder = VIDEOS_FOLDER_PROCESSED + "/" + video.name
+    if not os.path.exists(processed_videos_folder):
+        os.makedirs(processed_videos_folder)
+        process_video(downloaded_video_path, processed_videos_folder, video.name)
+
     play_text_video(args.type, args.repeat)
+
+
+def get_video_by_type(type_arg: TypeArg) -> Video:
+    if type_arg == TypeArg.SUBWAY_SURFERS:
+        return subway_video
+    elif type_arg == TypeArg.FAMILY_GUY:
+        return family_guy_video
+    else:
+        raise Exception("Unknown video type")
 
 
 def clear() -> None:
@@ -65,12 +81,7 @@ def remove_extension(filename: str) -> str:
     return os.path.splitext(filename)[0]
 
 
-def process_video(input_path: str, filename: str) -> None:
-    save_directory = VIDEOS_FOLDER_PROCESSED + "/" + filename
-    if os.path.exists(save_directory):
-        return
-    os.makedirs(save_directory)
-
+def process_video(input_path: str, output_path: str, filename: str) -> None:
     video_capture = cv2.VideoCapture(input_path)
     dimensions = (
         int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT)),
@@ -83,7 +94,7 @@ def process_video(input_path: str, filename: str) -> None:
     for i in range(int(frame_count)):
         _, image = video_capture.read()
 
-        saved_file_path = save_directory + f"/{i + 1}.txt"
+        saved_file_path = output_path + f"/{i + 1}.txt"
         with open(saved_file_path, "w", encoding="UTF-8") as file_output:
             file_output.write(converter.img_to_text(image))
             progress_bar.progress(i + 1)
@@ -116,9 +127,9 @@ def play_text_video(video_type: TypeArg, repeat: bool) -> None:
 
 
 def get_video_filename(video_type: TypeArg):
-    if video_type == TypeArg.SUBWAY:
+    if video_type == TypeArg.SUBWAY_SURFERS:
         return subway_video.name
-    if video_type == TypeArg.FAMILY:
+    if video_type == TypeArg.FAMILY_GUY:
         return family_guy_video.name
     return subway_video.name
 
