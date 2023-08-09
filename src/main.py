@@ -4,7 +4,7 @@ from pathlib import Path
 import cv2
 
 from args import initialize_parser, TypeArg
-from img_to_text_converter import ImageToTextConverter
+from img_to_text_converter import ImageToTextConverter, GreyscaleVariants
 from progress_bar import DivideProgressBar
 from text_video_player import TextVideoPlayer
 from youtube_downloader import YoutubeDownloader, Video
@@ -48,46 +48,43 @@ def main() -> None:
             f"{video.name}.mp4"
         )
 
-    processed_videos_folder = VIDEOS_FOLDER_PROCESSED + "/" + video.name
+    greyscale_type_name = args.greyscale_chars.name.lower()
+    processed_videos_folder = f"{VIDEOS_FOLDER_PROCESSED}/{video.name}/{greyscale_type_name}"
     if not os.path.exists(processed_videos_folder):
         os.makedirs(processed_videos_folder)
-        process_video(downloaded_video_path, processed_videos_folder, video.name)
+        process_video(downloaded_video_path, processed_videos_folder, video.name, args.greyscale_chars)
 
-    play_text_video(args.type, args.repeat)
+    play_text_video(processed_videos_folder, args.repeat)
 
 
 def get_video_by_type(type_arg: TypeArg) -> Video:
     if type_arg == TypeArg.SUBWAY_SURFERS:
         return subway_video
-    elif type_arg == TypeArg.FAMILY_GUY:
+    if type_arg == TypeArg.FAMILY_GUY:
         return family_guy_video
-    else:
-        raise Exception("Unknown video type")
+    return subway_video
 
 
 def clear() -> None:
     os.system('cls' if os.name == 'nt' else 'clear')
 
 
-def process_videos() -> None:
-    videos_in_directory = Path(VIDEOS_FOLDER_DOWNLOADS).glob('**/*.mp4')
-    for video_path_object in videos_in_directory:
-        filename = remove_extension(video_path_object.name)
-        filepath_with_filename = str(video_path_object)
-        process_video(filepath_with_filename, filename)
-
-
 def remove_extension(filename: str) -> str:
     return os.path.splitext(filename)[0]
 
 
-def process_video(input_path: str, output_path: str, filename: str) -> None:
+def process_video(
+        input_path: str,
+        output_path: str,
+        filename: str,
+        greyscale_type: GreyscaleVariants
+) -> None:
     video_capture = cv2.VideoCapture(input_path)
     dimensions = (
         int(video_capture.get(cv2.CAP_PROP_FRAME_HEIGHT)),
         int(video_capture.get(cv2.CAP_PROP_FRAME_WIDTH))
     )
-    converter = ImageToTextConverter(dimensions)
+    converter = ImageToTextConverter(dimensions, greyscale_characters=greyscale_type)
 
     frame_count = int(video_capture.get(cv2.CAP_PROP_FRAME_COUNT))
     progress_bar = DivideProgressBar(f"Zpracovávám {filename}", frame_count)
@@ -103,16 +100,12 @@ def process_video(input_path: str, output_path: str, filename: str) -> None:
     video_capture.release()
 
 
-def play_text_video(video_type: TypeArg, repeat: bool) -> None:
-    processed_videos = os.listdir(VIDEOS_FOLDER_PROCESSED)
-    video_to_play = processed_videos[processed_videos.index(get_video_filename(video_type))]
-
+def play_text_video(input_path: str, repeat: bool) -> None:
     text_frames: list[str] = []
-    path = os.path.join(VIDEOS_FOLDER_PROCESSED, video_to_play)
-    dir_files = os.listdir(path)
+    dir_files = os.listdir(input_path)
     dir_files.sort(key=file_sort)
     for text_frame in dir_files:
-        with open(path + "/" + text_frame, "r", encoding="UTF-8") as opened_text_frame:
+        with open(input_path + "/" + text_frame, "r", encoding="UTF-8") as opened_text_frame:
             text_frames.append(opened_text_frame.read())
 
     clear()
