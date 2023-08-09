@@ -28,7 +28,7 @@ def initialize_parser() -> Namespace:
 
 
 class TypeArg(Enum):
-    SUBWAY = "subway"
+    SUBWAY = "subway-surfers"
     FAMILY = "family-guy"
 
     def __str__(self):
