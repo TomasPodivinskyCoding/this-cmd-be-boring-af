@@ -4,7 +4,7 @@ import pytube.exceptions
 from pytube import YouTube
 from pytube.exceptions import VideoUnavailable
 
-from src.progress_bar import BlockProgressBar
+from progress_bar import BlockProgressBar
 
 
 @dataclasses.dataclass
