@@ -15,8 +15,8 @@ pylint = "^2.17.5"
 pytest = "^7.4.0"
 
 [tool.pytest.ini_options]
-testpaths = ["app/test"]
-pythonpath = ["app/src"]
+testpaths = ["tests"]
+pythonpath = ["src"]
 
 
 [build-system]

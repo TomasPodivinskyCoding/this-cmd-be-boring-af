@@ -130,8 +130,6 @@ def load_text_frames(input_path: str) -> list[str]:
 
 def extract_correct_text_files(input_path: str) -> list[str]:
     dir_files = os.listdir(input_path)
-    print(dir_files)
-    # filter dir files
     dir_files = list(
         filter(lambda file: file.endswith(".txt") and file[:-4].isdigit(), dir_files)
     )
