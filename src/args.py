@@ -2,7 +2,7 @@ import argparse
 from argparse import Namespace
 from enum import Enum
 
-from img_to_text_converter import GreyscaleVariants
+from src.img_to_text_converter import GreyscaleVariants
 
 APP_DESCRIPTION = "Malý nástroj na přehrávání vtipných momentů z Griffinových, " \
                   "Subway Surfers a jiných zábavných videí v konzoli"

@@ -4,11 +4,11 @@ import sys
 
 import cv2
 
-from args import initialize_parser, TypeArg
-from img_to_text_converter import ImageToTextConverter, GreyscaleVariants
-from progress_bar import DivideProgressBar
-from text_video_player import TextVideoPlayer
-from youtube_downloader import YoutubeDownloader, Video
+from src.args import initialize_parser, TypeArg
+from src.img_to_text_converter import ImageToTextConverter, GreyscaleVariants
+from src.progress_bar import DivideProgressBar
+from src.text_video_player import TextVideoPlayer
+from src.youtube_downloader import YoutubeDownloader, Video
 
 # To add (don't really have the time to create an issue tracker for this)
 # Save data to appdata folder
