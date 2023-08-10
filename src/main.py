@@ -13,9 +13,9 @@ from youtube_downloader import YoutubeDownloader, Video
 # To add (don't really have the time to create an issue tracker for this)
 # Print colors in the video
 # Allow users to play their own videos
-# Progress bar when processing video frame for playing
-# Get more videos
-# Fix clear with repeat flag
+# Progress bar when processing video frame for playing (good for longer video)
+# Get more zoomer funny distraction videos
+# Fix not clearing console with repeat flag
 # README
 # PUBLISH TO PYPI
 
@@ -41,7 +41,8 @@ def main() -> None:
     downloaded_video_path = VIDEOS_FOLDER_DOWNLOADS + "/" + downloaded_video_filename
     if not os.path.exists(downloaded_video_path):
         print(f"Stahuji video {video.name}")
-        os.makedirs(VIDEOS_FOLDER_DOWNLOADS)
+        if not os.path.exists(VIDEOS_FOLDER_DOWNLOADS):
+            os.makedirs(VIDEOS_FOLDER_DOWNLOADS)
         YoutubeDownloader().download_youtube_video(
             video.url,
             VIDEOS_FOLDER_DOWNLOADS,
