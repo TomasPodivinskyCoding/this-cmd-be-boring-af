@@ -12,12 +12,10 @@ from text_video_player import TextVideoPlayer
 from youtube_downloader import YoutubeDownloader, Video
 
 # To add (don't really have the time to create an issue tracker for this)
-# Save data to appdata folder?
 # Fix not clearing console with repeat flag
 # Get more zoomer funny distraction videos
 # Progress bar when processing video frame for playing (good for longer video)
 # More greyscale variants
-# load_text_frames -> filter out non txt files
 
 # PUBLISH TO PYPI
 # README
@@ -122,13 +120,24 @@ def play_text_video(input_path: str, repeat: bool) -> None:
 
 def load_text_frames(input_path: str) -> list[str]:
     text_frames: list[str] = []
-    dir_files = os.listdir(input_path)
-    dir_files.sort(key=file_sort)
+    dir_files = extract_correct_text_files(input_path)
     for text_frame in dir_files:
         with open(input_path + "/" + text_frame, "r", encoding="UTF-8") as opened_text_frame:
             text_frames.append(opened_text_frame.read())
         opened_text_frame.close()
     return text_frames
+
+
+def extract_correct_text_files(input_path: str) -> list[str]:
+    dir_files = os.listdir(input_path)
+    print(dir_files)
+    # filter dir files
+    dir_files = list(
+        filter(lambda file: file.endswith(".txt") and file[:-4].isdigit(), dir_files)
+    )
+
+    dir_files.sort(key=file_sort)
+    return dir_files
 
 
 def clear() -> None:
