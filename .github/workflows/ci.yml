@@ -1,4 +1,4 @@
-name: Pylint
+name: CI
 
 on: [push]
 
@@ -24,3 +24,7 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         poetry run pylint $(git ls-files '*.py') --rcfile=.pylintrc
+
+    - name: Test with pytest
+      run: |
+        poetry run pytest

@@ -6,15 +6,16 @@ import cv2
 
 from args import initialize_parser, TypeArg
 from img_to_text_converter import ImageToTextConverter, GreyscaleVariants
+from path_getter import get_resources_folder
 from progress_bar import DivideProgressBar
 from text_video_player import TextVideoPlayer
 from youtube_downloader import YoutubeDownloader, Video
 
 # To add (don't really have the time to create an issue tracker for this)
-# Save data to appdata folder
 # Fix not clearing console with repeat flag
 # Get more zoomer funny distraction videos
 # Progress bar when processing video frame for playing (good for longer video)
+# More greyscale variants
 
 # PUBLISH TO PYPI
 # README
@@ -31,7 +32,7 @@ family_guy_video: Video = Video(
     "https://www.youtube.com/watch?v=ppyBo0UfgBk&ab_channel=LenoksRecordings"
 )
 
-VIDEOS_FOLDER = "../videos/"
+VIDEOS_FOLDER = get_resources_folder() + "/videos/"
 VIDEOS_FOLDER_DOWNLOADS = VIDEOS_FOLDER + "downloads"
 VIDEOS_FOLDER_PROCESSED = VIDEOS_FOLDER + "processed"
 
@@ -43,14 +44,7 @@ def main() -> None:
     downloaded_video_filename = f"{video.name}.mp4"
     downloaded_video_path = VIDEOS_FOLDER_DOWNLOADS + "/" + downloaded_video_filename
     if not os.path.exists(downloaded_video_path):
-        print(f"Stahuji video {video.name}")
-        if not os.path.exists(VIDEOS_FOLDER_DOWNLOADS):
-            os.makedirs(VIDEOS_FOLDER_DOWNLOADS)
-        YoutubeDownloader().download_youtube_video(
-            video.url,
-            VIDEOS_FOLDER_DOWNLOADS,
-            f"{video.name}.mp4"
-        )
+        handle_video_not_downloaded(video)
 
     greyscale_type_name = args.greyscale_chars.name.lower()
     processed_videos_folder = f"{VIDEOS_FOLDER_PROCESSED}/{video.name}/{greyscale_type_name}"
@@ -73,12 +67,15 @@ def get_video_by_type(type_arg: TypeArg) -> Video:
     return subway_video
 
 
-def clear() -> None:
-    os.system('cls' if os.name == 'nt' else 'clear')
-
-
-def remove_extension(filename: str) -> str:
-    return os.path.splitext(filename)[0]
+def handle_video_not_downloaded(video: Video) -> None:
+    print(f"Stahuji video {video.name}")
+    if not os.path.exists(VIDEOS_FOLDER_DOWNLOADS):
+        os.makedirs(VIDEOS_FOLDER_DOWNLOADS)
+    YoutubeDownloader().download_youtube_video(
+        video.url,
+        VIDEOS_FOLDER_DOWNLOADS,
+        f"{video.name}.mp4"
+    )
 
 
 def process_video(
@@ -109,41 +106,55 @@ def process_video(
 
 
 def play_text_video(input_path: str, repeat: bool) -> None:
+    clear()
+
+    text_video_player = TextVideoPlayer(load_text_frames(input_path))
+
+    setup_ctrl_c_handler(text_video_player)
+
+    if repeat:
+        while True:
+            text_video_player.play()
+    text_video_player.play()
+
+
+def load_text_frames(input_path: str) -> list[str]:
     text_frames: list[str] = []
-    dir_files = os.listdir(input_path)
-    dir_files.sort(key=file_sort)
+    dir_files = extract_correct_text_files(input_path)
     for text_frame in dir_files:
         with open(input_path + "/" + text_frame, "r", encoding="UTF-8") as opened_text_frame:
             text_frames.append(opened_text_frame.read())
+        opened_text_frame.close()
+    return text_frames
 
-    clear()
 
-    text_video_player = TextVideoPlayer(text_frames)
+def extract_correct_text_files(input_path: str) -> list[str]:
+    dir_files = os.listdir(input_path)
+    dir_files = list(
+        filter(lambda file: file.endswith(".txt") and file[:-4].isdigit(), dir_files)
+    )
 
+    dir_files.sort(key=file_sort)
+    return dir_files
+
+
+def clear() -> None:
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+
+def setup_ctrl_c_handler(text_video_player: TextVideoPlayer) -> None:
     def handle_ctrl_c(_sig, _frame) -> None:
         print("\n" * text_video_player.new_lines_number)
         sys.exit(0)
 
     signal.signal(signal.SIGINT, handle_ctrl_c)
 
-    if not repeat:
-        text_video_player.play()
-        return
-
-    while True:
-        text_video_player.play()
-
-
-def get_video_filename(video_type: TypeArg):
-    if video_type == TypeArg.SUBWAY_SURFERS:
-        return subway_video.name
-    if video_type == TypeArg.FAMILY_GUY:
-        return family_guy_video.name
-    return subway_video.name
-
 
 def file_sort(filename: str) -> int:
-    return int(filename[:filename.rfind(".")])
+    try:
+        return int(filename[:filename.rfind(".")])
+    except ValueError:
+        return 0
 
 
 if __name__ == '__main__':
