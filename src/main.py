@@ -11,13 +11,16 @@ from text_video_player import TextVideoPlayer
 from youtube_downloader import YoutubeDownloader, Video
 
 # To add (don't really have the time to create an issue tracker for this)
+# Save data to appdata folder
+# Fix not clearing console with repeat flag
+# Get more zoomer funny distraction videos
+# Progress bar when processing video frame for playing (good for longer video)
+
+# PUBLISH TO PYPI
+# README
+
 # Print colors in the video
 # Allow users to play their own videos
-# Progress bar when processing video frame for playing (good for longer video)
-# Get more zoomer funny distraction videos
-# Fix not clearing console with repeat flag
-# README
-# PUBLISH TO PYPI
 
 subway_video: Video = Video(
     TypeArg.SUBWAY_SURFERS.value,
@@ -25,7 +28,7 @@ subway_video: Video = Video(
 )
 family_guy_video: Video = Video(
     TypeArg.FAMILY_GUY.value,
-    "https://www.youtube.com/watch?v=z5dekcBMYQs&ab_channel=LenoksRecordings"
+    "https://www.youtube.com/watch?v=ppyBo0UfgBk&ab_channel=LenoksRecordings"
 )
 
 VIDEOS_FOLDER = "../videos/"
