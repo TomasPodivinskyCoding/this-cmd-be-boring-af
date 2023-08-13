@@ -2,7 +2,7 @@ import os
 
 import pytest
 
-from src import main, path_getter
+from this_cmd_be_boring_af import main, path_getter
 
 
 @pytest.mark.parametrize(
