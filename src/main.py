@@ -9,10 +9,11 @@ from img_to_text_converter import ImageToTextConverter, GreyscaleVariants
 from path_getter import get_resources_folder
 from progress_bar import DivideProgressBar
 from text_video_player import TextVideoPlayer
-from youtube_downloader import YoutubeDownloader, Video
+from youtube_downloader import Video, download_youtube_video
 
 # To add (don't really have the time to create an issue tracker for this)
 # Fix not clearing console with repeat flag
+# Fix text_video_player crashing when playing video with no frames
 # Get more zoomer funny distraction videos
 # Progress bar when processing video frame for playing (good for longer video)
 # More greyscale variants
@@ -71,11 +72,12 @@ def handle_video_not_downloaded(video: Video) -> None:
     print(f"Stahuji video {video.name}")
     if not os.path.exists(VIDEOS_FOLDER_DOWNLOADS):
         os.makedirs(VIDEOS_FOLDER_DOWNLOADS)
-    YoutubeDownloader().download_youtube_video(
+    if not download_youtube_video(
         video.url,
         VIDEOS_FOLDER_DOWNLOADS,
         f"{video.name}.mp4"
-    )
+    ):
+        sys.exit(1)
 
 
 def process_video(
