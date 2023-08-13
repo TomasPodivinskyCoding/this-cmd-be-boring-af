@@ -12,7 +12,6 @@ from text_video_player import TextVideoPlayer
 from youtube_downloader import Video, download_youtube_video
 
 # To add (don't really have the time to create an issue tracker for this)
-# Fix not clearing console with repeat flag
 # Fix text_video_player crashing when playing video with no frames
 # Get more zoomer funny distraction videos
 # Progress bar when processing video frame for playing (good for longer video)
@@ -117,6 +116,7 @@ def play_text_video(input_path: str, repeat: bool) -> None:
     if repeat:
         while True:
             text_video_player.play()
+            clear()
     text_video_player.play()
 
 
