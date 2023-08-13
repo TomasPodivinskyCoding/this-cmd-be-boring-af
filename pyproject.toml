@@ -2,7 +2,7 @@
 name = "this-cmd-be-boring-af"
 version = "0.1.0"
 description = "A little tool to show subway surfers, family guy funny moments and other entertaining clips in console"
-authors = ["tomas.podivinsky <tomas.podivinsky@olc.cz>"]
+authors = ["tomas.podivinsky"]
 readme = "README.md"
 
 [tool.poetry.dependencies]

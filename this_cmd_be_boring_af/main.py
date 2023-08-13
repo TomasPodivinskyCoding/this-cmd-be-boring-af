@@ -16,9 +16,6 @@ from youtube_downloader import Video, download_youtube_video
 # Progress bar when processing video frame for playing (good for longer video)
 # More greyscale variants
 
-# PUBLISH TO PYPI
-# README
-
 # Print colors in the video
 # Allow users to play their own videos
 
