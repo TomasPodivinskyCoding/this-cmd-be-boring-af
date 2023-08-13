@@ -12,7 +12,6 @@ from text_video_player import TextVideoPlayer
 from youtube_downloader import Video, download_youtube_video
 
 # To add (don't really have the time to create an issue tracker for this)
-# Fix text_video_player crashing when playing video with no frames
 # Get more zoomer funny distraction videos
 # Progress bar when processing video frame for playing (good for longer video)
 # More greyscale variants
@@ -108,8 +107,12 @@ def process_video(
 
 def play_text_video(input_path: str, repeat: bool) -> None:
     clear()
+    text_frames = load_text_frames(input_path)
+    if len(text_frames) == 0:
+        print(f"Nebyly nalezeny žádné textové soubory ve složce {input_path}")
+        sys.exit(1)
 
-    text_video_player = TextVideoPlayer(load_text_frames(input_path))
+    text_video_player = TextVideoPlayer(text_frames)
 
     setup_ctrl_c_handler(text_video_player)
 
@@ -117,7 +120,8 @@ def play_text_video(input_path: str, repeat: bool) -> None:
         while True:
             text_video_player.play()
             clear()
-    text_video_player.play()
+    else:
+        text_video_player.play()
 
 
 def load_text_frames(input_path: str) -> list[str]:

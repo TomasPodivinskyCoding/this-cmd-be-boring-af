@@ -25,7 +25,7 @@ def download_youtube_video(url: str, output_folder: str, filename: str) -> bool:
         return True
     except VideoUnavailable:
         print(f"\nVideo {url} není dostupné")
-    except pytube.exceptions.PytubeError as e:
+    except pytube.exceptions.PytubeError:
         print(f"\nNepovdelo se stáhnout video {url}")
     return False
 

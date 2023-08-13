@@ -27,7 +27,6 @@ class ImageToTextConverter:
         self.new_width = new_width
         self.new_height = self.__calculate_new_height(dimensions)
         self.greyscale_characters = greyscale_characters.value
-        self.rgb_weights = np.array([0.1140, 0.5870, 0.2989])
 
     def __calculate_new_height(self, dimensions: tuple[int, int]) -> int:
         ascii_character_aspect_ratio = 0.55
