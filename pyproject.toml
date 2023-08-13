@@ -16,7 +16,7 @@ pytest = "^7.4.0"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["src"]
+pythonpath = ["this_cmd_be_boring_af"]
 
 
 [build-system]
